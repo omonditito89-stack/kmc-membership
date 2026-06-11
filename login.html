@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KMC — Admin Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest: #1a3a2a; --forest-mid: #2d5a3d; --gold: #c9a84c; --gold-light: #e8c97a;
+  --gold-pale: #f5e9c8; --cream: #faf7f0; --white: #ffffff;
+  --slate: #4a5568; --slate-light: #718096; --border: #e2d9c8;
+  --red: #c0392b; --green: #27ae60; --shadow: 0 4px 20px rgba(26,58,42,0.10);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--forest);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-wrap{width:100%;max-width:420px}
+.logo-block{text-align:center;margin-bottom:32px}
+.logo-circle{width:72px;height:72px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;color:var(--forest);font-size:24px;margin:0 auto 16px}
+.logo-block h1{font-family:'Playfair Display',serif;font-size:24px;color:var(--white);font-weight:700}
+.logo-block p{font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:0.3px}
+.card{background:var(--white);border-radius:20px;padding:36px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.card h2{font-family:'Playfair Display',serif;font-size:22px;color:var(--forest);margin-bottom:6px}
+.card p{font-size:13.5px;color:var(--slate-light);margin-bottom:28px}
+.form-group{margin-bottom:18px}
+label{display:block;font-size:12.5px;font-weight:600;color:var(--forest);margin-bottom:6px;letter-spacing:0.3px}
+input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--forest);background:var(--white);outline:none;transition:border .18s}
+input:focus{border-color:var(--forest-mid)}
+.btn{width:100%;padding:13px;background:var(--forest);color:var(--white);border:none;border-radius:9px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .18s;margin-top:8px}
+.btn:hover{background:var(--forest-mid)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.error-msg{background:#fef0ee;color:var(--red);padding:12px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;border:1px solid #f5c6c0}
+.divider{text-align:center;font-size:12px;color:var(--slate-light);margin:20px 0;position:relative}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
+.divider::before{left:0} .divider::after{right:0}
+.register-link{text-align:center;margin-top:20px;font-size:13px;color:var(--slate-light)}
+.register-link a{color:var(--forest-mid);font-weight:600;text-decoration:none}
+.register-link a:hover{text-decoration:underline}
+.setup-note{background:var(--gold-pale);border:1px solid var(--gold);border-radius:10px;padding:14px;margin-top:20px;font-size:12.5px;color:var(--forest);line-height:1.6}
+.setup-note strong{display:block;margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<div class="login-wrap">
+  <div class="logo-block">
+    <div class="logo-circle">KMC</div>
+    <h1>Kenya Mennonite Church</h1>
+    <p>Membership Information System</p>
+  </div>
+
+  <div class="card">
+    <h2>Admin Login</h2>
+    <p>Sign in to manage members, finances &amp; church records</p>
+
+    <div class="error-msg" id="error-msg"></div>
+
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="email" placeholder="admin@kmc.org" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+
+    <button class="btn" id="login-btn" onclick="doLogin()">Sign In</button>
+
+    <div class="divider">or</div>
+
+    <div class="register-link">
+      Member self-registration? <a href="register-public.html">Register here →</a>
+    </div>
+
+    <div class="setup-note">
+      <strong>🛠️ First-time setup:</strong>
+      1. Create a Supabase project at <strong>supabase.com</strong><br>
+      2. Run <strong>supabase/schema.sql</strong> in the SQL Editor<br>
+      3. Update <strong>kmc-config.js</strong> with your URL &amp; anon key<br>
+      4. Create your first admin via Supabase Auth → Users
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="kmc-config.js"></script>
+<script>
+async function doLogin() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('login-btn');
+  const errEl = document.getElementById('error-msg');
+  errEl.style.display = 'none';
+
+  if (!email || !password) {
+    errEl.textContent = 'Please enter your email and password.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+
+  try {
+    const { data, error } = await Auth.signIn(email, password);
+    if (error) throw error;
+
+    // Check admin profile
+    const profile = await Auth.getAdminProfile(data.user.id);
+    if (!profile) throw new Error('Your account is not configured as an admin. Contact your system administrator.');
+    if (!profile.is_active) throw new Error('Your account has been deactivated. Contact your system administrator.');
+
+    // Update last_login
+    await window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON)
+      .from('admin_users').update({ last_login: new Date().toISOString() }).eq('auth_id', data.user.id);
+
+    // Store profile for use in dashboard
+    sessionStorage.setItem('kmc_profile', JSON.stringify(profile));
+    window.location.href = 'dashboard.html';
+  } catch(e) {
+    errEl.textContent = e.message || 'Login failed. Check your credentials.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  }
+}
+</script>
+</body>
+</html>

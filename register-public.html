@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KMC — Member Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest: #1a3a2a; --forest-mid: #2d5a3d; --forest-light: #3d7a52;
+  --gold: #c9a84c; --gold-light: #e8c97a; --gold-pale: #f5e9c8;
+  --cream: #faf7f0; --white: #ffffff;
+  --slate: #4a5568; --slate-light: #718096; --border: #e2d9c8;
+  --red: #c0392b; --red-pale: #fef0ee; --green: #27ae60; --green-pale: #eafaf1;
+  --shadow: 0 4px 20px rgba(26,58,42,0.10);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);min-height:100vh}
+.top-bar{background:var(--forest);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{width:40px;height:40px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;color:var(--forest);font-size:15px}
+.logo-text strong{font-family:'Playfair Display',serif;font-size:17px;color:#fff;display:block;line-height:1.1}
+.logo-text span{font-size:11px;color:rgba(255,255,255,0.55);letter-spacing:0.4px}
+.hero{background:linear-gradient(135deg,var(--forest) 0%,var(--forest-mid) 100%);padding:48px 32px;text-align:center;color:white}
+.hero h1{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;margin-bottom:10px}
+.hero p{font-size:15px;color:rgba(255,255,255,0.72);max-width:520px;margin:0 auto;line-height:1.6}
+.form-wrap{max-width:820px;margin:0 auto;padding:40px 24px 60px}
+.section{background:var(--white);border-radius:16px;box-shadow:var(--shadow);border:1px solid var(--border);padding:28px 32px;margin-bottom:24px}
+.section-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--forest);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--gold-pale);display:flex;align-items:center;gap:8px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+label{font-size:12.5px;font-weight:600;color:var(--forest);letter-spacing:0.3px}
+label .req{color:var(--red)}
+input,select,textarea{padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;font-family:'DM Sans',sans-serif;color:var(--forest);background:var(--white);outline:none;transition:border .18s}
+input:focus,select:focus,textarea:focus{border-color:var(--forest-mid)}
+textarea{resize:vertical;min-height:80px}
+.submit-bar{text-align:center;margin-top:8px}
+.btn-submit{background:var(--forest);color:var(--white);border:none;border-radius:10px;padding:14px 48px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .18s}
+.btn-submit:hover{background:var(--forest-mid)}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed}
+.error-box{background:var(--red-pale);color:var(--red);border:1px solid #f5c6c0;border-radius:8px;padding:12px 16px;font-size:13.5px;margin-bottom:20px;display:none}
+.success-screen{display:none;text-align:center;padding:60px 24px;max-width:540px;margin:40px auto}
+.success-icon{font-size:64px;margin-bottom:20px}
+.success-screen h2{font-family:'Playfair Display',serif;font-size:28px;color:var(--forest);margin-bottom:12px}
+.success-screen p{font-size:15px;color:var(--slate);line-height:1.7;margin-bottom:8px}
+.member-id-box{background:var(--green-pale);border:2px solid var(--green);border-radius:12px;padding:20px;margin:24px auto;max-width:320px}
+.member-id-box p{font-size:13px;color:var(--slate);margin-bottom:6px}
+.member-id-box strong{font-size:26px;font-family:'Playfair Display',serif;color:var(--forest);display:block}
+.back-link{display:inline-block;margin-top:12px;color:var(--forest-mid);font-weight:600;text-decoration:none;font-size:14px}
+.steps{display:flex;gap:0;margin-bottom:32px;overflow-x:auto}
+.step{flex:1;text-align:center;padding:12px 8px;background:var(--white);border:1px solid var(--border);cursor:pointer;transition:all .2s;font-size:13px;color:var(--slate-light);position:relative;min-width:100px}
+.step:first-child{border-radius:10px 0 0 10px}
+.step:last-child{border-radius:0 10px 10px 0}
+.step.active{background:var(--forest);color:var(--white);border-color:var(--forest);z-index:1}
+.step.done{background:var(--green-pale);color:var(--green);border-color:var(--green)}
+.step-num{display:block;font-size:18px;font-weight:700;margin-bottom:2px}
+.progress-bar{height:4px;background:var(--border);border-radius:4px;margin-bottom:28px;overflow:hidden}
+.progress-fill{height:100%;background:var(--gold);border-radius:4px;transition:width .4s ease}
+@media(max-width:640px){.hero h1{font-size:24px}.form-wrap{padding:24px 16px 40px}.section{padding:20px 16px}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo">
+    <div class="logo-icon">KMC</div>
+    <div class="logo-text">
+      <strong>Kenya Mennonite Church</strong>
+      <span>Member Registration Portal</span>
+    </div>
+  </div>
+  <a href="login.html" style="color:rgba(255,255,255,0.6);font-size:13px;text-decoration:none">Admin Login →</a>
+</div>
+
+<div class="hero">
+  <h1>Join the Kenya Mennonite Church</h1>
+  <p>Register as a member of your local KMC congregation. Your information will be securely stored and reviewed by your church administrator.</p>
+</div>
+
+<!-- SUCCESS SCREEN -->
+<div class="success-screen" id="success-screen">
+  <div class="success-icon">✅</div>
+  <h2>Registration Successful!</h2>
+  <p>Welcome to the Kenya Mennonite Church family. Your registration has been submitted and will be reviewed by your church administrator.</p>
+  <div class="member-id-box">
+    <p>Your Member Number</p>
+    <strong id="new-member-id">—</strong>
+  </div>
+  <p style="font-size:13px;color:var(--slate-light)">Please keep this number for your records. Your church administrator will confirm your membership.</p>
+  <a href="register-public.html" class="back-link">← Register Another Member</a>
+</div>
+
+<!-- REGISTRATION FORM -->
+<div class="form-wrap" id="form-wrap">
+
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:25%"></div></div>
+
+  <div class="steps" id="steps">
+    <div class="step active" onclick="goStep(1)"><span class="step-num">1</span>Personal</div>
+    <div class="step" onclick="goStep(2)"><span class="step-num">2</span>Contact</div>
+    <div class="step" onclick="goStep(3)"><span class="step-num">3</span>Church</div>
+    <div class="step" onclick="goStep(4)"><span class="step-num">4</span>Emergency</div>
+  </div>
+
+  <div class="error-box" id="err-box"></div>
+
+  <!-- STEP 1: Personal -->
+  <div id="step-1">
+    <div class="section">
+      <div class="section-title">👤 Personal Information</div>
+      <div class="form-grid">
+        <div class="form-group"><label>First Name <span class="req">*</span></label><input type="text" id="p-firstname" placeholder="First name"></div>
+        <div class="form-group"><label>Middle Name</label><input type="text" id="p-middlename" placeholder="Middle name (optional)"></div>
+        <div class="form-group"><label>Last Name <span class="req">*</span></label><input type="text" id="p-lastname" placeholder="Last name"></div>
+        <div class="form-group"><label>Gender <span class="req">*</span></label>
+          <select id="p-gender"><option value="">Select gender</option><option>Male</option><option>Female</option></select></div>
+        <div class="form-group"><label>Date of Birth</label><input type="date" id="p-dob"></div>
+        <div class="form-group"><label>National ID / Passport No.</label><input type="text" id="p-idno" placeholder="ID number"></div>
+        <div class="form-group"><label>Marital Status</label>
+          <select id="p-marital"><option value="">Select...</option><option>Single</option><option>Married</option><option>Widowed</option><option>Divorced</option></select></div>
+        <div class="form-group"><label>Occupation</label><input type="text" id="p-occupation" placeholder="Your occupation"></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end">
+      <button class="btn-submit" onclick="nextStep(1)">Next: Contact →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Contact -->
+  <div id="step-2" style="display:none">
+    <div class="section">
+      <div class="section-title">📞 Contact Details</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Phone Number <span class="req">*</span></label><input type="tel" id="p-phone" placeholder="07XXXXXXXX"></div>
+        <div class="form-group"><label>Alternative Phone</label><input type="tel" id="p-phone2" placeholder="07XXXXXXXX"></div>
+        <div class="form-group"><label>Email Address</label><input type="email" id="p-email" placeholder="email@example.com"></div>
+        <div class="form-group"><label>County</label><input type="text" id="p-county" placeholder="County of residence"></div>
+        <div class="form-group full"><label>Postal Address</label><input type="text" id="p-address" placeholder="P.O. Box ..."></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between">
+      <button class="btn-submit" style="background:var(--slate-light)" onclick="goStep(1)">← Back</button>
+      <button class="btn-submit" onclick="nextStep(2)">Next: Church →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Church -->
+  <div id="step-3" style="display:none">
+    <div class="section">
+      <div class="section-title">⛪ Church Membership</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Diocese <span class="req">*</span></label>
+          <select id="p-diocese" onchange="loadChurchesForSelect()"><option value="">Loading dioceses…</option></select></div>
+        <div class="form-group"><label>Church <span class="req">*</span></label>
+          <select id="p-church"><option value="">Select diocese first</option></select></div>
+        <div class="form-group"><label>Ministry / Department</label>
+          <select id="p-ministry">
+            <option value="">Select ministry</option>
+            <option>Women Ministry</option><option>Youth Ministry</option><option>Men Fellowship</option>
+            <option>Sunday School</option><option>Teenager Ministry</option><option>Choir</option>
+            <option>Evangelism</option><option>Missions</option>
+          </select></div>
+        <div class="form-group"><label>Date Joined Church</label><input type="date" id="p-joined"></div>
+        <div class="form-group"><label>Baptized?</label>
+          <select id="p-baptized"><option value="">Select…</option><option>Yes</option><option>No</option></select></div>
+        <div class="form-group"><label>Date Baptized</label><input type="date" id="p-baptizeddate"></div>
+        <div class="form-group full"><label>Additional Notes</label><textarea id="p-notes" placeholder="Any other information you'd like to share"></textarea></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between">
+      <button class="btn-submit" style="background:var(--slate-light)" onclick="goStep(2)">← Back</button>
+      <button class="btn-submit" onclick="nextStep(3)">Next: Emergency →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Emergency + Submit -->
+  <div id="step-4" style="display:none">
+    <div class="section">
+      <div class="section-title">🆘 Emergency Contact</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Contact Name</label><input type="text" id="p-emname" placeholder="Full name"></div>
+        <div class="form-group"><label>Relationship</label><input type="text" id="p-emrel" placeholder="e.g. Spouse, Parent"></div>
+        <div class="form-group"><label>Contact Phone</label><input type="tel" id="p-emphone" placeholder="07XXXXXXXX"></div>
+      </div>
+    </div>
+    <div class="section" style="background:var(--gold-pale);border-color:var(--gold)">
+      <div class="section-title" style="border-color:rgba(201,168,76,0.3)">📋 Review &amp; Submit</div>
+      <p style="font-size:13.5px;color:var(--slate);line-height:1.7;margin-bottom:0">
+        By submitting this form, you confirm that all information provided is accurate. Your data will be securely stored in the KMC membership database and managed by your church and diocese administrators in accordance with KMC data privacy guidelines.
+      </p>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <button class="btn-submit" style="background:var(--slate-light)" onclick="goStep(3)">← Back</button>
+      <button class="btn-submit" id="submit-btn" onclick="submitRegistration()">✅ Submit Registration</button>
+    </div>
+  </div>
+
+</div><!-- /form-wrap -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="kmc-config.js"></script>
+<script>
+let allChurches = [];
+let currentStep = 1;
+
+async function init() {
+  try {
+    const dioceses = await DB.getDioceses();
+    const dSel = document.getElementById('p-diocese');
+    dSel.innerHTML = '<option value="">Select Diocese</option>' +
+      dioceses.map(d => `<option value="${d.name}">${d.name}</option>`).join('');
+    allChurches = await DB.getChurches();
+  } catch(e) {
+    document.getElementById('p-diocese').innerHTML = '<option value="">Could not load dioceses</option>';
+  }
+}
+
+function loadChurchesForSelect() {
+  const diocese = document.getElementById('p-diocese').value;
+  const cSel = document.getElementById('p-church');
+  const filtered = allChurches.filter(c => c.diocese === diocese);
+  cSel.innerHTML = '<option value="">Select Church</option>' +
+    filtered.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+}
+
+function goStep(n) {
+  document.getElementById('step-' + currentStep).style.display = 'none';
+  document.getElementById('step-' + n).style.display = 'block';
+  const steps = document.querySelectorAll('.step');
+  steps.forEach((s, i) => {
+    s.classList.remove('active','done');
+    if (i + 1 < n) s.classList.add('done');
+    else if (i + 1 === n) s.classList.add('active');
+  });
+  document.getElementById('progress-fill').style.width = (n * 25) + '%';
+  currentStep = n;
+  window.scrollTo({top:0,behavior:'smooth'});
+  hideErr();
+}
+
+function nextStep(from) {
+  const err = validateStep(from);
+  if (err) { showErr(err); return; }
+  goStep(from + 1);
+}
+
+function validateStep(step) {
+  if (step === 1) {
+    if (!v('p-firstname').trim()) return 'First name is required.';
+    if (!v('p-lastname').trim()) return 'Last name is required.';
+    if (!v('p-gender')) return 'Please select your gender.';
+  }
+  if (step === 2) {
+    if (!v('p-phone').trim()) return 'Phone number is required.';
+    if (!/^0[0-9]{9}$/.test(v('p-phone').trim())) return 'Enter a valid Kenyan phone number (07XXXXXXXX).';
+  }
+  if (step === 3) {
+    if (!v('p-diocese')) return 'Please select your diocese.';
+    if (!v('p-church')) return 'Please select your church.';
+  }
+  return null;
+}
+
+function v(id) { return document.getElementById(id).value; }
+function showErr(msg) { const e = document.getElementById('err-box'); e.textContent = msg; e.style.display = 'block'; }
+function hideErr() { document.getElementById('err-box').style.display = 'none'; }
+
+async function submitRegistration() {
+  const err = validateStep(4);
+  if (err) { showErr(err); return; }
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  const row = {
+    firstname: v('p-firstname').trim(),
+    middlename: v('p-middlename').trim(),
+    lastname: v('p-lastname').trim(),
+    gender: v('p-gender'),
+    dob: v('p-dob') || null,
+    id_number: v('p-idno').trim(),
+    marital: v('p-marital'),
+    occupation: v('p-occupation').trim(),
+    phone: v('p-phone').trim(),
+    phone2: v('p-phone2').trim(),
+    email: v('p-email').trim(),
+    county: v('p-county').trim(),
+    address: v('p-address').trim(),
+    diocese: v('p-diocese'),
+    church: v('p-church'),
+    ministry: v('p-ministry'),
+    joined: v('p-joined') || null,
+    baptized: v('p-baptized'),
+    baptized_date: v('p-baptizeddate') || null,
+    em_name: v('p-emname').trim(),
+    em_relationship: v('p-emrel').trim(),
+    em_phone: v('p-emphone').trim(),
+    notes: v('p-notes').trim(),
+    status: 'Active',
+    registration_source: 'online',
+    paid_amount: 0
+  };
+
+  try {
+    const saved = await DB.saveMember(row);
+    document.getElementById('form-wrap').style.display = 'none';
+    const ss = document.getElementById('success-screen');
+    ss.style.display = 'block';
+    document.getElementById('new-member-id').textContent = saved.id;
+  } catch(e) {
+    showErr('Registration failed: ' + (e.message || 'Unknown error. Please try again.'));
+    btn.disabled = false;
+    btn.textContent = '✅ Submit Registration';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
