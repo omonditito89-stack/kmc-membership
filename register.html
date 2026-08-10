@@ -35,7 +35,6 @@ label .req{color:var(--red)}
 input,select,textarea{padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;font-family:'DM Sans',sans-serif;color:var(--forest);background:var(--white);outline:none;transition:border .18s}
 input:focus,select:focus,textarea:focus{border-color:var(--forest-mid)}
 textarea{resize:vertical;min-height:80px}
-.submit-bar{text-align:center;margin-top:8px}
 .btn-submit{background:var(--forest);color:var(--white);border:none;border-radius:10px;padding:14px 48px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .18s}
 .btn-submit:hover{background:var(--forest-mid)}
 .btn-submit:disabled{opacity:.6;cursor:not-allowed}
@@ -47,7 +46,6 @@ textarea{resize:vertical;min-height:80px}
 .member-id-box{background:var(--green-pale);border:2px solid var(--green);border-radius:12px;padding:20px;margin:24px auto;max-width:320px}
 .member-id-box p{font-size:13px;color:var(--slate);margin-bottom:6px}
 .member-id-box strong{font-size:26px;font-family:'Playfair Display',serif;color:var(--forest);display:block}
-.back-link{display:inline-block;margin-top:12px;color:var(--forest-mid);font-weight:600;text-decoration:none;font-size:14px}
 .steps{display:flex;gap:0;margin-bottom:32px;overflow-x:auto}
 .step{flex:1;text-align:center;padding:12px 8px;background:var(--white);border:1px solid var(--border);cursor:pointer;transition:all .2s;font-size:13px;color:var(--slate-light);position:relative;min-width:100px}
 .step:first-child{border-radius:10px 0 0 10px}
@@ -57,6 +55,13 @@ textarea{resize:vertical;min-height:80px}
 .step-num{display:block;font-size:18px;font-weight:700;margin-bottom:2px}
 .progress-bar{height:4px;background:var(--border);border-radius:4px;margin-bottom:28px;overflow:hidden}
 .progress-fill{height:100%;background:var(--gold);border-radius:4px;transition:width .4s ease}
+.photo-upload{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--cream)}
+.photo-upload:hover{border-color:var(--gold);background:var(--gold-pale)}
+.photo-preview{width:100px;height:100px;border-radius:50%;object-fit:cover;margin:10px auto;display:none;border:3px solid var(--gold)}
+.pay-option{border:2px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;margin-bottom:10px}
+.pay-option.selected{border-color:var(--forest);background:var(--gold-pale)}
+.pay-option input[type=radio]{margin-right:8px}
+.badge-pending{background:#fef5ec;color:#e67e22;border:1px solid #f0a500;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600}
 @media(max-width:640px){.hero h1{font-size:24px}.form-wrap{padding:24px 16px 40px}.section{padding:20px 16px}}
 </style>
 </head>
@@ -82,25 +87,33 @@ textarea{resize:vertical;min-height:80px}
 <div class="success-screen" id="success-screen">
   <div class="success-icon">✅</div>
   <h2>Registration Successful!</h2>
-  <p>Welcome to the Kenya Mennonite Church family. Your registration has been submitted and will be reviewed by your church administrator.</p>
+  <p>Welcome to the Kenya Mennonite Church family. Your registration has been submitted and is <span class="badge-pending">Pending Admin Approval</span></p>
   <div class="member-id-box">
     <p>Your Member Number</p>
     <strong id="new-member-id">—</strong>
   </div>
-  <p style="font-size:13px;color:var(--slate-light)">Please keep this number for your records. Your church administrator will confirm your membership.</p>
-  <a href="register-public.html" class="back-link">← Register Another Member</a>
+  <p style="font-size:13px;color:var(--slate-light)">Please keep this number for your records. You will be notified once your membership is confirmed by your church administrator.</p>
+
+  <div style="background:var(--gold-pale);border:1px solid var(--gold);border-radius:12px;padding:20px;margin:20px auto;max-width:420px">
+    <p style="font-weight:600;color:var(--forest);margin-bottom:6px">💰 Optional: Pay Your Annual Subscription</p>
+    <p style="font-size:13px;color:var(--slate);line-height:1.6;margin-bottom:12px">KES 600/year keeps your membership active. You can pay now via M-Pesa, or do it later.</p>
+    <a href="pay-subscription.html" style="display:inline-block;background:var(--forest);color:#fff;padding:11px 24px;border-radius:8px;text-decoration:none;font-size:13.5px;font-weight:600">Pay Subscription Now →</a>
+  </div>
+
+  <a href="register-public.html" style="display:inline-block;margin-top:12px;color:var(--forest-mid);font-weight:600;text-decoration:none;font-size:14px">← Register Another Member</a>
 </div>
 
 <!-- REGISTRATION FORM -->
 <div class="form-wrap" id="form-wrap">
 
-  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:25%"></div></div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:20%"></div></div>
 
   <div class="steps" id="steps">
     <div class="step active" onclick="goStep(1)"><span class="step-num">1</span>Personal</div>
     <div class="step" onclick="goStep(2)"><span class="step-num">2</span>Contact</div>
     <div class="step" onclick="goStep(3)"><span class="step-num">3</span>Church</div>
     <div class="step" onclick="goStep(4)"><span class="step-num">4</span>Emergency</div>
+    <div class="step" onclick="goStep(5)"><span class="step-num">5</span>Photo</div>
   </div>
 
   <div class="error-box" id="err-box"></div>
@@ -174,7 +187,7 @@ textarea{resize:vertical;min-height:80px}
     </div>
   </div>
 
-  <!-- STEP 4: Emergency + Submit -->
+  <!-- STEP 4: Emergency -->
   <div id="step-4" style="display:none">
     <div class="section">
       <div class="section-title">🆘 Emergency Contact</div>
@@ -184,14 +197,37 @@ textarea{resize:vertical;min-height:80px}
         <div class="form-group"><label>Contact Phone</label><input type="tel" id="p-emphone" placeholder="07XXXXXXXX"></div>
       </div>
     </div>
+    <div style="display:flex;justify-content:space-between">
+      <button class="btn-submit" style="background:var(--slate-light)" onclick="goStep(3)">← Back</button>
+      <button class="btn-submit" onclick="nextStep(4)">Next: Photo →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: Photo + Submit -->
+  <div id="step-5" style="display:none">
+    <div class="section">
+      <div class="section-title">📸 Profile Photo (Optional)</div>
+      <div class="photo-upload" onclick="document.getElementById('p-photo').click()">
+        <img id="photo-preview" class="photo-preview" src="" alt="Preview">
+        <div id="photo-placeholder">
+          <div style="font-size:40px;margin-bottom:8px">📷</div>
+          <div style="font-size:14px;font-weight:600;color:var(--forest)">Click to upload your photo</div>
+          <div style="font-size:12px;color:var(--slate-light);margin-top:4px">JPG, PNG — max 2MB</div>
+        </div>
+        <input type="file" id="p-photo" accept="image/*" style="display:none" onchange="previewPhoto(event)">
+      </div>
+    </div>
+
     <div class="section" style="background:var(--gold-pale);border-color:var(--gold)">
       <div class="section-title" style="border-color:rgba(201,168,76,0.3)">📋 Review &amp; Submit</div>
-      <p style="font-size:13.5px;color:var(--slate);line-height:1.7;margin-bottom:0">
-        By submitting this form, you confirm that all information provided is accurate. Your data will be securely stored in the KMC membership database and managed by your church and diocese administrators in accordance with KMC data privacy guidelines.
+      <p style="font-size:13.5px;color:var(--slate);line-height:1.7;margin-bottom:12px">
+        By submitting this form, you confirm that all information provided is accurate. Your registration will be reviewed by your church administrator before activation.
       </p>
+      <div id="review-summary" style="background:white;border-radius:10px;padding:16px;font-size:13px;color:var(--slate)"></div>
     </div>
+
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <button class="btn-submit" style="background:var(--slate-light)" onclick="goStep(3)">← Back</button>
+      <button class="btn-submit" style="background:var(--slate-light)" onclick="goStep(4)">← Back</button>
       <button class="btn-submit" id="submit-btn" onclick="submitRegistration()">✅ Submit Registration</button>
     </div>
   </div>
@@ -203,6 +239,7 @@ textarea{resize:vertical;min-height:80px}
 <script>
 let allChurches = [];
 let currentStep = 1;
+let photoBase64 = null;
 
 async function init() {
   try {
@@ -224,6 +261,20 @@ function loadChurchesForSelect() {
     filtered.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
 }
 
+function previewPhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { showErr('Photo must be less than 2MB.'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    photoBase64 = e.target.result;
+    document.getElementById('photo-preview').src = photoBase64;
+    document.getElementById('photo-preview').style.display = 'block';
+    document.getElementById('photo-placeholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
 function goStep(n) {
   document.getElementById('step-' + currentStep).style.display = 'none';
   document.getElementById('step-' + n).style.display = 'block';
@@ -233,10 +284,26 @@ function goStep(n) {
     if (i + 1 < n) s.classList.add('done');
     else if (i + 1 === n) s.classList.add('active');
   });
-  document.getElementById('progress-fill').style.width = (n * 25) + '%';
+  document.getElementById('progress-fill').style.width = (n * 20) + '%';
   currentStep = n;
   window.scrollTo({top:0,behavior:'smooth'});
   hideErr();
+  if (n === 5) buildReviewSummary();
+}
+
+function buildReviewSummary() {
+  const summary = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><strong>Name:</strong> ${v('p-firstname')} ${v('p-middlename')} ${v('p-lastname')}</div>
+      <div><strong>Gender:</strong> ${v('p-gender')}</div>
+      <div><strong>Phone:</strong> ${v('p-phone')}</div>
+      <div><strong>Email:</strong> ${v('p-email')||'—'}</div>
+      <div><strong>Diocese:</strong> ${v('p-diocese')}</div>
+      <div><strong>Church:</strong> ${v('p-church')}</div>
+      <div><strong>Ministry:</strong> ${v('p-ministry')||'—'}</div>
+      <div><strong>Baptized:</strong> ${v('p-baptized')||'—'}</div>
+    </div>`;
+  document.getElementById('review-summary').innerHTML = summary;
 }
 
 function nextStep(from) {
@@ -267,8 +334,6 @@ function showErr(msg) { const e = document.getElementById('err-box'); e.textCont
 function hideErr() { document.getElementById('err-box').style.display = 'none'; }
 
 async function submitRegistration() {
-  const err = validateStep(4);
-  if (err) { showErr(err); return; }
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
   btn.textContent = 'Submitting…';
@@ -302,12 +367,14 @@ async function submitRegistration() {
     paid_amount: 0
   };
 
+  if (photoBase64) row.photo_url = photoBase64;
+
   try {
     const saved = await DB.saveMember(row);
     document.getElementById('form-wrap').style.display = 'none';
-    const ss = document.getElementById('success-screen');
-    ss.style.display = 'block';
+    document.getElementById('success-screen').style.display = 'block';
     document.getElementById('new-member-id').textContent = saved.id;
+    window.scrollTo({top:0,behavior:'smooth'});
   } catch(e) {
     showErr('Registration failed: ' + (e.message || 'Unknown error. Please try again.'));
     btn.disabled = false;
